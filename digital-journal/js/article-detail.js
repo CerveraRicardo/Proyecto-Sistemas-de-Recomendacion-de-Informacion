@@ -6,6 +6,33 @@
 console.log('📄 article-detail.js cargado correctamente');
 
 // ================================
+// FUNCIONES GLOBALES INMEDIATAS (se definen al cargar el script)
+// ================================
+
+// Definir funciones globales inmediatamente
+if (typeof window !== 'undefined') {
+    // Función principal para navegación entre artículos
+    window.navigateToArticle = function(articleId) {
+        if (articleId && articleId !== 'undefined' && articleId !== null) {
+            console.log(`🚀 Navegando a artículo: ${articleId}`);
+            window.location.href = `article-detail.html?id=${articleId}`;
+        } else {
+            console.error('❌ ID de artículo inválido:', articleId);
+            if (typeof showNotification === 'function') {
+                showNotification('Error: ID de artículo no válido', 'error');
+            }
+        }
+    };
+
+    // Función alternativa para compatibilidad
+    window.openArticleDetail = function(articleId) {
+        window.navigateToArticle(articleId);
+    };
+    
+    console.log('✅ Funciones globales de navegación definidas');
+}
+
+// ================================
 // CONFIGURACIÓN
 // ================================
 
@@ -266,6 +293,8 @@ const UIManager = {
                 }, index * 100);
             });
         }, 50);
+        
+        console.log(`✅ ${articles.length} artículos similares renderizados y clickeables`);
     },
 
     renderHybridRecommendations(recommendations) {
@@ -292,6 +321,40 @@ const UIManager = {
                 }, index * 100);
             });
         }, 50);
+        
+        console.log(`✅ ${recommendations.length} recomendaciones híbridas renderizadas y clickeables`);
+    },
+
+    async findSubmissionIdForPublication(publicationId) {
+        // Función para convertir publication_id a submission_id
+        try {
+            const volumesResponse = await fetch(`${CONFIG.API_BASE_URL}/volumes`);
+            if (!volumesResponse.ok) return null;
+            
+            const volumesData = await volumesResponse.json();
+            const volumes = volumesData.volumes || [];
+            
+            for (const volume of volumes) {
+                const volumeResponse = await fetch(`${CONFIG.API_BASE_URL}/volumes-no-filter/${volume.issue_id}`);
+                if (volumeResponse.ok) {
+                    const volumeData = await volumeResponse.json();
+                    const articles = volumeData.articles || [];
+                    
+                    const found = articles.find(article => article.publication_id == publicationId);
+                    if (found && found.submission_id) {
+                        console.log(`🔍 Mapeado publication_id ${publicationId} → submission_id ${found.submission_id}`);
+                        return found.submission_id;
+                    }
+                }
+            }
+            
+            console.warn(`⚠️ No se encontró submission_id para publication_id: ${publicationId}`);
+            return publicationId; // Fallback al publication_id
+            
+        } catch (error) {
+            console.error('❌ Error mapeando IDs:', error);
+            return publicationId; // Fallback al publication_id
+        }
     },
 
     createRecommendationCard(article, type) {
@@ -303,11 +366,39 @@ const UIManager = {
         const cleanAbstract = Utils.cleanHtmlContent(article.abstract);
         const truncatedAbstract = Utils.truncateText(cleanAbstract || 'Sin resumen disponible', 100);
         
-        // Determinar ID para navegación (submission_id o publication_id)
-        const articleId = article.submission_id || article.publication_id;
+        // CORREGIDO: Determinar ID correcto según el tipo y datos disponibles
+        let articleId;
+        
+        if (type === 'similar') {
+            // Para similares: usar target_publication_id primero, luego otros
+            articleId = article.target_publication_id || article.publication_id || article.submission_id;
+            
+            // Si es un publication_id, intentar usar submission_id de metadata si existe
+            if (article.metadata) {
+                try {
+                    const metadata = typeof article.metadata === 'string' ? JSON.parse(article.metadata) : article.metadata;
+                    if (metadata.submission_id) {
+                        articleId = metadata.submission_id;
+                    }
+                } catch (e) {
+                    // Ignorar errores de parsing
+                }
+            }
+        } else {
+            // Para híbridas: usar submission_id primero
+            articleId = article.submission_id || article.publication_id;
+        }
+        
+        console.log(`🔗 Creando tarjeta recomendación: ${cleanTitle} (ID: ${articleId}, tipo: ${type})`);
+        console.log(`📊 Datos del artículo:`, article);
+        
+        // Si aún no tenemos un ID válido, usar publication_id como fallback
+        if (!articleId || articleId === 'undefined') {
+            articleId = article.publication_id || article.target_publication_id || 0;
+        }
         
         return `
-            <div class="recommendation-card" onclick="openArticleDetail(${articleId})">
+            <div class="recommendation-card" onclick="navigateToArticle(${articleId})" style="cursor: pointer;">
                 <div class="rec-header">
                     <h4 class="rec-title">${cleanTitle}</h4>
                     <div class="rec-score">
@@ -330,7 +421,7 @@ const UIManager = {
                         <i class="fas fa-brain"></i>
                         <span>${algorithm}</span>
                     </div>
-                    <button class="rec-btn" onclick="event.stopPropagation(); openArticleDetail(${articleId})" title="Ver artículo">
+                    <button class="rec-btn" onclick="event.stopPropagation(); navigateToArticle(${articleId})" title="Ver artículo">
                         <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
@@ -472,6 +563,13 @@ const ArticleManager = {
                 const recommendations = data.recommendations || [];
                 
                 console.log(`✅ ${recommendations.length} artículos similares encontrados`);
+                console.log('📊 Datos de similares:', recommendations);
+                
+                // DEBUG: Analizar estructura de datos
+                if (recommendations.length > 0) {
+                    console.log('🔍 DEBUG - Primer artículo similar:', recommendations[0]);
+                    console.log('🔍 DEBUG - Campos disponibles:', Object.keys(recommendations[0]));
+                }
                 
                 AppState.similarArticles = recommendations;
                 UIManager.renderSimilarArticles(recommendations);
@@ -508,6 +606,7 @@ const ArticleManager = {
                 );
                 
                 console.log(`✅ ${filteredRecs.length} recomendaciones híbridas encontradas`);
+                console.log('📊 Datos de híbridas:', filteredRecs);
                 
                 AppState.hybridRecommendations = filteredRecs;
                 UIManager.renderHybridRecommendations(filteredRecs);
@@ -528,6 +627,29 @@ const ArticleManager = {
 // ================================
 // FUNCIONES GLOBALES
 // ================================
+
+// NUEVA: Función para abrir página de detalles de artículo
+window.openArticleDetail = function(articleId) {
+    if (articleId) {
+        console.log(`🔗 Navegando a detalles del artículo: ${articleId}`);
+        console.log(`📍 URL actual: ${window.location.href}`);
+        console.log(`📍 Nueva URL: article-detail.html?id=${articleId}`);
+        window.location.href = `article-detail.html?id=${articleId}`;
+    } else {
+        console.error('❌ ID de artículo no válido:', articleId);
+    }
+};
+
+// NUEVA: Función alternativa para navegación (por si hay conflictos)
+window.navigateToArticle = function(articleId) {
+    if (articleId && articleId !== 'undefined' && articleId !== null) {
+        console.log(`🚀 Navegando a artículo: ${articleId}`);
+        window.location.href = `article-detail.html?id=${articleId}`;
+    } else {
+        console.error('❌ ID de artículo inválido:', articleId);
+        showNotification('Error: ID de artículo no válido', 'error');
+    }
+};
 
 window.loadArticleData = function() {
     ArticleManager.loadArticleData();
@@ -679,6 +801,11 @@ function copyToClipboard(text) {
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Inicializando página de detalles de artículo...');
+    
+    // Verificar que las funciones globales están disponibles
+    console.log('🔍 Verificando funciones globales:');
+    console.log('   - openArticleDetail:', typeof window.openArticleDetail);
+    console.log('   - navigateToArticle:', typeof window.navigateToArticle);
     
     // Obtener ID del artículo de la URL
     AppState.submissionId = Utils.getUrlParameter('id');
