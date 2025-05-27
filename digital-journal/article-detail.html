@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artículo - Revista Científica</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/article-detail.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-journal-whills"></i> Revista Científica
+            </a>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
+                <a href="volumes.html"><i class="fas fa-book"></i> Volúmenes</a>
+                <a href="about.html"><i class="fas fa-info-circle"></i> Acerca de</a>
+            </div>
+            <div class="nav-actions">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Loading State -->
+    <div class="loading-container" id="loading-container">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+        </div>
+        <p>Cargando artículo...</p>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container" id="main-content" style="display: none;">
+        
+        <!-- Article Header -->
+        <article class="article-header" id="article-header">
+            <div class="article-meta">
+                <div class="breadcrumb">
+                    <a href="index.html">Inicio</a>
+                    <span class="separator"><i class="fas fa-chevron-right"></i></span>
+                    <a href="volumes.html">Volúmenes</a>
+                    <span class="separator"><i class="fas fa-chevron-right"></i></span>
+                    <span class="current" id="breadcrumb-title">Cargando...</span>
+                </div>
+                
+                <div class="article-badges" id="article-badges">
+                    <span class="badge open-access">
+                        <i class="fas fa-unlock"></i> Acceso Abierto
+                    </span>
+                </div>
+            </div>
+
+            <div class="article-title-section">
+                <h1 class="article-title" id="article-title">Cargando artículo...</h1>
+                
+                <div class="article-authors" id="article-authors">
+                    <i class="fas fa-users"></i>
+                    <span>Cargando autores...</span>
+                </div>
+                
+                <div class="article-info-grid">
+                    <div class="info-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <div>
+                            <span class="info-label">Fecha de publicación</span>
+                            <span class="info-value" id="publication-date">--</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-file-alt"></i>
+                        <div>
+                            <span class="info-label">Páginas</span>
+                            <span class="info-value" id="article-pages">--</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-hashtag"></i>
+                        <div>
+                            <span class="info-label">ID de publicación</span>
+                            <span class="info-value" id="publication-id">--</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-eye"></i>
+                        <div>
+                            <span class="info-label">Tipo de acceso</span>
+                            <span class="info-value">Abierto</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Removed article-actions section -->
+        </article>
+
+        <!-- Article Content -->
+        <section class="article-content-section">
+            <div class="content-header">
+                <h2>
+                    <i class="fas fa-align-left"></i>
+                    Resumen
+                </h2>
+            </div>
+            
+            <div class="abstract-content" id="abstract-content">
+                <p>Cargando resumen del artículo...</p>
+            </div>
+
+            <!-- Keywords Section -->
+            <div class="keywords-section" id="keywords-section" style="display: none;">
+                <h3><i class="fas fa-tags"></i> Palabras clave</h3>
+                <div class="keywords-list" id="keywords-list">
+                    <!-- Keywords will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="additional-info" id="additional-info">
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4><i class="fas fa-user-graduate"></i> Información del autor</h4>
+                        <div class="author-details" id="author-details">
+                            <p>Cargando información de autores...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h4><i class="fas fa-journal-whills"></i> Información de la revista</h4>
+                        <div class="journal-details" id="journal-details">
+                            <p><strong>Revista:</strong> Revista Científica</p>
+                            <p><strong>ISSN:</strong> 1234-5678</p>
+                            <p><strong>Editor:</strong> Sistema Editorial</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Similar Articles Section -->
+        <section class="recommendations-section" id="similar-articles-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-sitemap"></i>
+                    Artículos similares
+                </h2>
+                <p class="section-description">
+                    Basado en análisis de contenido y similitud de temas
+                </p>
+                
+                <div class="section-controls">
+                    <div class="loading-spinner small" id="similar-loading" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                    <button class="refresh-btn" onclick="loadSimilarArticles()" title="Actualizar">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="recommendations-grid" id="similar-articles-grid">
+                <!-- Similar articles will be loaded here -->
+            </div>
+
+            <!-- No similar articles state -->
+            <div class="no-recommendations hidden" id="no-similar">
+                <div class="no-rec-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>No se encontraron artículos similares</h3>
+                <p>No hay artículos relacionados disponibles en este momento.</p>
+            </div>
+        </section>
+
+        <!-- Hybrid Recommendations Section -->
+        <section class="recommendations-section" id="hybrid-recommendations-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-brain"></i>
+                    Recomendaciones para ti
+                </h2>
+                <p class="section-description">
+                    Seleccionados por nuestro sistema de inteligencia artificial híbrida
+                </p>
+                
+                <div class="section-controls">
+                    <div class="loading-spinner small" id="hybrid-loading" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                    <button class="refresh-btn" onclick="loadHybridRecommendations()" title="Actualizar">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="recommendations-grid" id="hybrid-recommendations-grid">
+                <!-- Hybrid recommendations will be loaded here -->
+            </div>
+
+            <!-- No hybrid recommendations state -->
+            <div class="no-recommendations hidden" id="no-hybrid">
+                <div class="no-rec-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>No hay recomendaciones personalizadas</h3>
+                <p>El sistema de IA está procesando recomendaciones para ti.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Error State -->
+    <div class="error-container hidden" id="error-container">
+        <div class="error-content">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2>Error cargando artículo</h2>
+            <p id="error-message">No se pudo cargar la información del artículo</p>
+            <div class="error-actions">
+                <button class="retry-btn" onclick="loadArticleData()">
+                    <i class="fas fa-redo"></i> Reintentar
+                </button>
+                <a href="index.html" class="back-link">
+                    <i class="fas fa-home"></i> Ir al inicio
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="fab-container">
+        <button class="fab" onclick="scrollToTop()" id="scroll-top-fab">
+            <i class="fas fa-chevron-up"></i>
+        </button>
+    </div>
+
+    <!-- Citation Modal Removed -->
+
+    <!-- Scripts -->
+    <script src="js/article-detail.js"></script>
+</body>
+</html>

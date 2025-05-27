@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volúmenes - Revista Científica</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/volumes.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-journal-whills"></i> Revista Científica
+            </a>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
+                <a href="volumes.html" class="active"><i class="fas fa-book"></i> Volúmenes</a>
+                <a href="about.html"><i class="fas fa-info-circle"></i> Acerca de</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-book-open"></i>
+                    Volúmenes de la Revista
+                </h1>
+                <p class="page-description">
+                    Explora todos los volúmenes publicados, ordenados del más reciente al más antiguo
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Controls -->
+        <div class="volumes-controls">
+            <div class="volumes-info">
+                <div class="total-count" id="total-count">
+                    <i class="fas fa-books"></i>
+                    <span id="total-volumes">0</span> volúmenes
+                </div>
+                
+                <div class="api-status">
+                    <span class="status-dot" id="status-dot"></span>
+                    <span id="status-text">Verificando...</span>
+                </div>
+            </div>
+            
+            <div class="view-controls">
+                <div class="view-toggle">
+                    <button onclick="setViewMode('grid')" id="grid-view-btn" class="active">
+                        <i class="fas fa-th-large"></i> Tarjetas
+                    </button>
+                    <button onclick="setViewMode('list')" id="list-view-btn">
+                        <i class="fas fa-list"></i> Lista
+                    </button>
+                </div>
+                
+                <button class="refresh-btn" onclick="loadVolumes(true)">
+                    <i class="fas fa-sync-alt" id="refresh-icon"></i>
+                    Actualizar
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading-container" id="loading-container">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <p>Cargando volúmenes...</p>
+        </div>
+
+        <!-- Grid View -->
+        <div class="volumes-grid" id="volumes-grid">
+            <!-- Volume cards will be loaded here -->
+        </div>
+
+        <!-- List View -->
+        <div class="volumes-list hidden" id="volumes-list">
+            <!-- Volume rows will be loaded here -->
+        </div>
+
+        <!-- Error State -->
+        <div class="error-container hidden" id="error-container">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Error de Conexión</h3>
+            <p id="error-message">No se pudieron cargar los volúmenes</p>
+            <button class="retry-btn" onclick="loadVolumes(true)">
+                <i class="fas fa-redo"></i> Reintentar
+            </button>
+        </div>
+
+        <!-- No Volumes State -->
+        <div class="no-volumes hidden" id="no-volumes">
+            <div class="no-volumes-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <h3>No hay volúmenes disponibles</h3>
+            <p>Aún no se han publicado volúmenes en esta revista</p>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="js/volumes.js"></script>
+</body>
+</html>

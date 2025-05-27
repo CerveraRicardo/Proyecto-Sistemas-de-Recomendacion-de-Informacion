@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Recomendaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .status { font-weight: bold; margin: 10px 0; }
+        .success { color: green; }
+        .error { color: red; }
+        .loading { color: orange; }
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .article-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        .article-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .article-authors {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .article-meta {
+            font-size: 0.8em;
+            color: #888;
+            display: flex;
+            justify-content: space-between;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        #log {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test API de Recomendaciones</h1>
+    
+    <div class="test-section">
+        <h2>1. Estado de Conexión</h2>
+        <div class="status" id="connection-status">Verificando...</div>
+        <button onclick="testConnection()">🔄 Probar Conexión</button>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test de Endpoints</h2>
+        <button onclick="testEndpoint('health')">🏥 /health</button>
+        <button onclick="testEndpoint('status')">📊 /status</button>
+        <button onclick="testEndpoint('recent')">📅 /admin/homepage/recent</button>
+        <button onclick="testEndpoint('featured')">⭐ /admin/homepage/featured</button>
+        <button onclick="testEndpoint('popular')">🔥 /admin/homepage/popular</button>
+        <button onclick="testEndpoint('trending')">📈 /admin/homepage/trending</button>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Artículos Recientes</h2>
+        <button onclick="loadRecentArticles()">📥 Cargar Artículos Recientes</button>
+        <div id="recent-status" class="status"></div>
+        <div id="recent-articles" class="articles-grid"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Log de Debug</h2>
+        <button onclick="clearLog()">🗑️ Limpiar Log</button>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        // Configuración
+        const API_BASE_URL = 'http://localhost:8000';
+        
+        // Función de log
+        function log(message) {
+            const logEl = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logEl.textContent += `[${timestamp}] ${message}\n`;
+            logEl.scrollTop = logEl.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+        }
+
+        // Test de conexión
+        async function testConnection() {
+            const statusEl = document.getElementById('connection-status');
+            statusEl.textContent = 'Probando conexión...';
+            statusEl.className = 'status loading';
+            
+            try {
+                log('🔗 Probando conexión con API...');
+                const response = await fetch(`${API_BASE_URL}/health`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log(`✅ Conexión exitosa: ${data.status}`);
+                    statusEl.textContent = `✅ Conectado - ${data.status}`;
+                    statusEl.className = 'status success';
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                log(`❌ Error de conexión: ${error.message}`);
+                statusEl.textContent = `❌ Error: ${error.message}`;
+                statusEl.className = 'status error';
+                return false;
+            }
+        }
+
+        // Test de endpoint específico
+        async function testEndpoint(type) {
+            let url;
+            switch(type) {
+                case 'health':
+                    url = '/health';
+                    break;
+                case 'status':
+                    url = '/status';
+                    break;
+                case 'recent':
+                case 'featured':
+                case 'popular':
+                case 'trending':
+                    url = `/admin/homepage/${type}?limit=3`;
+                    break;
+                default:
+                    url = '/';
+            }
+
+            try {
+                log(`🔄 Probando endpoint: ${url}`);
+                const response = await fetch(`${API_BASE_URL}${url}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log(`✅ ${url} - Respuesta OK`);
+                    log(`📊 Datos: ${JSON.stringify(data, null, 2).substring(0, 200)}...`);
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                log(`❌ Error en ${url}: ${error.message}`);
+            }
+        }
+
+        // Cargar artículos recientes
+        async function loadRecentArticles() {
+            const statusEl = document.getElementById('recent-status');
+            const articlesEl = document.getElementById('recent-articles');
+            
+            statusEl.textContent = 'Cargando artículos...';
+            statusEl.className = 'status loading';
+            articlesEl.innerHTML = '';
+
+            try {
+                log('📥 Cargando artículos recientes...');
+                const response = await fetch(`${API_BASE_URL}/admin/homepage/recent?limit=6`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                log(`✅ Recibidos ${data.articles?.length || 0} artículos`);
+
+                if (data.articles && data.articles.length > 0) {
+                    statusEl.textContent = `✅ ${data.articles.length} artículos cargados`;
+                    statusEl.className = 'status success';
+                    
+                    // Renderizar artículos
+                    articlesEl.innerHTML = data.articles.map(article => {
+                        // Limpiar autores duplicados
+                        const cleanAuthors = cleanAuthorsList(article.authors);
+                        
+                        return `
+                            <div class="article-card">
+                                <div class="article-title">${article.title || 'Sin título'}</div>
+                                <div class="article-authors">${cleanAuthors}</div>
+                                <div class="article-meta">
+                                    <span>Rank: #${article.rank}</span>
+                                    <span>Score: ${(article.score * 100).toFixed(0)}%</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    statusEl.textContent = '⚠️ No se encontraron artículos';
+                    statusEl.className = 'status error';
+                }
+
+            } catch (error) {
+                log(`❌ Error cargando artículos: ${error.message}`);
+                statusEl.textContent = `❌ Error: ${error.message}`;
+                statusEl.className = 'status error';
+            }
+        }
+
+        // Función para limpiar lista de autores
+        function cleanAuthorsList(authors) {
+            if (!authors) return 'Autor desconocido';
+            
+            const authorList = authors.split(';')
+                .map(author => author.trim())
+                .filter(author => author && author.length > 2)
+                .filter((author, index, arr) => {
+                    const cleanAuthor = author.replace(/\s+/g, ' ').toLowerCase();
+                    return arr.findIndex(a => a.replace(/\s+/g, ' ').toLowerCase() === cleanAuthor) === index;
+                })
+                .slice(0, 3);
+            
+            if (authorList.length === 0) return 'Autor desconocido';
+            
+            return authorList.join(', ') + (authorList.length >= 3 ? ' et al.' : '');
+        }
+
+        // Auto-inicializar
+        window.addEventListener('load', () => {
+            log('🚀 Página de test cargada');
+            testConnection();
+        });
+    </script>
+</body>
+</html>

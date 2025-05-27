@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revista Científica - Portal Digital</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <i class="fas fa-journal-whills"></i>
+                    <span>Revista Científica</span>
+                </div>
+                
+                <div class="nav-menu" id="nav-menu">
+                    <a href="index.html" class="nav-link active">
+                        <i class="fas fa-home"></i> Inicio
+                    </a>
+                    <a href="volumes.html" class="nav-link">
+                        <i class="fas fa-book"></i> Volúmenes
+                    </a>
+                    <a href="about.html" class="nav-link">
+                        <i class="fas fa-info-circle"></i> Acerca de
+                    </a>
+                </div>
+
+                <div class="nav-status">
+                    <div class="api-status" id="api-status">
+                        <span class="status-dot" id="status-dot"></span>
+                        <span class="status-text" id="status-text">Verificando...</span>
+                    </div>
+                </div>
+
+                <div class="nav-toggle" id="nav-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Descubre el Conocimiento 
+                    <span class="highlight">Científico</span>
+                </h1>
+                <p class="hero-description">
+                    Portal digital de investigación científica con recomendaciones inteligentes 
+                    basadas en análisis avanzado de contenido y comportamiento.
+                </p>
+                <!-- <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="total-articles">...</span>
+                        <span class="stat-label">Artículos</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="total-recommendations">...</span>
+                        <span class="stat-label">Recomendaciones</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="system-accuracy">...</span>
+                        <span class="stat-label">Precisión IA</span>
+                    </div>
+                </div> -->
+            </div>
+            <div class="hero-visual">
+                <div class="floating-elements">
+                    <div class="element element-1"><i class="fas fa-dna"></i></div>
+                    <div class="element element-2"><i class="fas fa-brain"></i></div>
+                    <div class="element element-3"><i class="fas fa-microscope"></i></div>
+                    <div class="element element-4"><i class="fas fa-atom"></i></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- System Status
+        <section class="system-status" id="system-status">
+            <div class="status-card">
+                <div class="status-header">
+                    <h3><i class="fas fa-cogs"></i> Estado del Sistema</h3>
+                    <div class="last-update" id="last-update">
+                        <i class="fas fa-clock"></i>
+                        <span>Última actualización: <span id="update-time">--</span></span>
+                    </div>
+                </div>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <i class="fas fa-database"></i>
+                        <div class="status-info">
+                            <span class="status-value" id="db-status">Conectada</span>
+                            <span class="status-desc">Base de datos</span>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-robot"></i>
+                        <div class="status-info">
+                            <span class="status-value" id="ai-status">Activa</span>
+                            <span class="status-desc">IA Recomendaciones</span>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <div class="status-info">
+                            <span class="status-value" id="response-time">< 5ms</span>
+                            <span class="status-desc">Tiempo respuesta</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section> -->
+
+        <!-- Recommendations Sections -->
+        <section class="recommendations-section">
+            <!-- Recent Articles -->
+            <div class="recommendation-category" id="recent-section">
+                <div class="category-header">
+                    <h2><i class="fas fa-clock"></i> Artículos Recientes</h2>
+                    <div class="category-controls">
+                        <div class="loading-spinner" id="recent-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <button class="refresh-btn" onclick="refreshRecommendations('recent')" title="Actualizar">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="articles-grid" id="recent-articles">
+                    <!-- Articles will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Featured Articles -->
+            <div class="recommendation-category" id="featured-section">
+                <div class="category-header">
+                    <h2><i class="fas fa-star"></i> Artículos Destacados</h2>
+                    <div class="category-controls">
+                        <div class="loading-spinner" id="featured-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <button class="refresh-btn" onclick="refreshRecommendations('featured')" title="Actualizar">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="articles-grid" id="featured-articles">
+                    <!-- Articles will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Popular Articles -->
+            <div class="recommendation-category" id="popular-section">
+                <div class="category-header">
+                    <h2><i class="fas fa-fire"></i> Más Populares</h2>
+                    <div class="category-controls">
+                        <div class="loading-spinner" id="popular-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <button class="refresh-btn" onclick="refreshRecommendations('popular')" title="Actualizar">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="articles-grid" id="popular-articles">
+                    <!-- Articles will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Trending Articles -->
+            <div class="recommendation-category" id="trending-section">
+                <div class="category-header">
+                    <h2><i class="fas fa-trending-up"></i> En Tendencia</h2>
+                    <div class="category-controls">
+                        <div class="loading-spinner" id="trending-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <button class="refresh-btn" onclick="refreshRecommendations('trending')" title="Actualizar">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="articles-grid" id="trending-articles">
+                    <!-- Articles will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Revista Científica</h4>
+                <p>Portal digital de investigación científica con tecnología de vanguardia.</p>
+                <div class="tech-stack">
+                    <span class="tech-badge">API FastAPI</span>
+                    <span class="tech-badge">OJS 3.3+</span>
+                    <span class="tech-badge">IA Híbrida</span>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Navegación</h4>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="volumes.html">Volúmenes</a></li>
+                    <li><a href="about.html">Acerca de</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>API Status</h4>
+                <div class="api-info">
+                    <div class="api-endpoint">
+                        <code id="api-url">http://localhost:8000</code>
+                    </div>
+                    <div class="api-health" id="api-health">
+                        <span class="health-indicator" id="health-indicator"></span>
+                        <span id="health-text">Verificando...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Estadísticas</h4>
+                <div class="footer-stats">
+                    <div class="footer-stat">
+                        <span class="footer-stat-number" id="footer-articles">--</span>
+                        <span class="footer-stat-label">Artículos</span>
+                    </div>
+                    <div class="footer-stat">
+                        <span class="footer-stat-number" id="footer-recommendations">--</span>
+                        <span class="footer-stat-label">Recomendaciones</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Revista Científica. Sistema de recomendaciones IA para OJS.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/homepage.js"></script>
+</body>
+</html>
